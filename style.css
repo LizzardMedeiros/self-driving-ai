@@ -1,0 +1,14 @@
+body {
+  min-width: 800px;
+  min-height: 600px;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  background-color: #212121;
+  padding: 0;
+}
+
+#canvas {
+  background-color: lightgray;
+  margin: 0;
+}
