@@ -8,6 +8,21 @@ body {
   padding: 0;
 }
 
+.menu {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  align-items: center;
+  justify-content: center;
+}
+
+.menu>button {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  margin: 12px 0;
+}
+
 #canvas {
   background-color: lightgray;
   margin: 0;

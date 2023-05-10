@@ -10,11 +10,42 @@ class RNA {
     const [firstLevel, ...otherLevels] = network.levelList;
 
     let outputList = Level.feedForward(inputList, firstLevel);
-    for (const level of otherLevels) {
-      outputList = Level.feedForward(inputList, level);
-    }
+    for (const level of otherLevels) outputList = Level.feedForward(inputList, level);
 
     return outputList;
+  }
+
+  mutate (rate = 1) {
+    this.levelList.forEach((level) => {
+      for (const i in level.biasList) {
+        const self = level.biasList[i];
+        level.biasList[i] = lerp(self, randomRange(-1, 1), rate);
+      }
+      for (const i in level.weighList) {
+        for (const j in level.weighList[i]) {
+          const self = level.weighList[i][j];
+          level.weighList[i][j] = lerp(self, randomRange(-1, 1), rate);
+        }
+      }
+
+    });
+  }
+
+  saveRNA() {
+    const rawRNA = JSON.stringify(this.levelList);
+    localStorage.setItem('rna', rawRNA);
+  }
+
+  loadRNA() {
+    const rawRNA = localStorage.getItem('rna');
+    const rna = JSON.parse(rawRNA);
+    if (!rna) return;
+
+    this.levelList = rna;
+  }
+
+  static removeRNA() {
+    localStorage.setItem('rna', null);
   }
 }
 
