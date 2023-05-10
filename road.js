@@ -11,15 +11,17 @@ class Road {
     this.top = -INF;
     this.bottom = INF;
 
-    const topLeft = { x: this.left, y: this.top };
-    const topRight = { x: this.right, y: this.top };
-    const bottomLeft = { x: this.left, y: this.bottom };
-    const bottomRight = { x: this.right, y: this.bottom };
-
     this.borderList = [
-      [topLeft, bottomLeft], 
-      [topRight, bottomRight],
+      listToCoords([
+        { x: this.right, y: this.top },
+        { x: this.right, y: this.bottom },
+      ]),
+      listToCoords([
+        { x: this.left, y: this.top },
+        { x: this.left, y: this.bottom },
+      ]),
     ]
+    
   };
 
   getLaneCenter (laneIndex) {
@@ -32,7 +34,7 @@ class Road {
     ctx.strokeStyle = 'white';
 
     for (let i = 1; i <= this.laneCount - 1; i += 1) {
-      const x = learp(this.left, this.right, i / this.laneCount);
+      const x = lerp(this.left, this.right, i / this.laneCount);
 
       ctx.setLineDash([20, 20]);
 
@@ -43,12 +45,15 @@ class Road {
     }
 
     ctx.setLineDash([]);
-    this.borderList.forEach((border) => {
-      const [coord1, coord2] = border;
-      ctx.beginPath();
-      ctx.moveTo(coord1.x, coord1.y);
-      ctx.lineTo(coord2.x, coord2.y);
-      ctx.stroke();
-    });
+
+    ctx.beginPath();
+    for(const border of this.borderList) {
+      for (const point of border) {
+        const [p1, p2] = point;
+        ctx.moveTo(p1.x, p1.y);
+        ctx.lineTo(p2.x, p2.y);
+      }
+    }
+    ctx.stroke();
   }
 }

@@ -12,3 +12,8 @@ body {
   background-color: lightgray;
   margin: 0;
 }
+
+#console {
+  background-color: black;
+  margin: 0;
+}

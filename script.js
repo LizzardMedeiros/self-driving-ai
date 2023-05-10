@@ -1,28 +1,46 @@
-const canvas = document.getElementById('canvas');
-const ctx = canvas.getContext('2d');
+const screen = document.getElementById('canvas');
+const visualizer = document.getElementById('console');
 
-const road = new Road(canvas);
+const screenCtx = screen.getContext('2d');
+const visualizerCtx = visualizer.getContext('2d');
 
-const xx = road.getLaneCenter(1);
-const player = new Car('PLAYER', xx, 0, 30, 50);
-/*const traffic = new Array(0).fill({}).map(() => {
-  return new Car('DUMMY', road.getLaneCenter(0), -150, 30, 50, 2)
-});*/
+const road = new Road(screen);
+
+const traffic = new Array(3).fill({}).map((_, i) => {
+  const lane = i % 3;
+  const yy = lane % 2 !== 0 ? -150 : -250;
+  return new Car('DUMMY', road.getLaneCenter(lane), yy, 30, 50, 2, 'blue')
+});
+
+const carList = new Array(10).fill({}).map(() => {
+  const xx = road.getLaneCenter(1);
+  return new Car('AI', xx, 0, 30, 50);
+});
 
 function animate() {
-  //for (const car of traffic) car.update(road.borderList);
-  player.update(road.borderList);
+  const [bestCar] = carList.sort((a, b) => a.centerY - b.centerY);
 
-  canvas.height = window.innerHeight;
+  for (const dummyCar of traffic) dummyCar.update();
+  for (const car of carList) {
+    const shapeList = traffic.map((dummyCar) => dummyCar.collisionShape);
+    car.showSensor = false;
+    car.update(...road.borderList, ...shapeList);
+  }
 
-  ctx.save();
-  ctx.translate(0, -player.centerY + canvas.height * 0.7);
+  bestCar.showSensor = true;
+  screen.height = window.innerHeight;
+  visualizer.height = window.innerHeight;
 
-  road.draw(ctx);
-  player.draw(ctx);
-  //for (const car of traffic) car.draw(ctx);
+  screenCtx.save();
+  screenCtx.translate(0, -bestCar.centerY + screen.height * 0.7);
 
-  ctx.restore();
+  road.draw(screenCtx);
+
+  for (const dummyCar of traffic) dummyCar.draw(screenCtx);
+  for (const car of carList) car.draw(screenCtx);
+
+  screenCtx.restore();
+  Visualizer.drawNetwork(visualizerCtx, bestCar.brain);
   requestAnimationFrame(animate);
 }
 
